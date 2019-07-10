@@ -9,6 +9,8 @@ import io.ktor.html.*
 import kotlinx.html.*
 import kotlinx.css.*
 import com.fasterxml.jackson.databind.*
+import com.knowyourplace.datamodels.PlayerInfo
+import com.knowyourplace.store.CompanyStore
 import io.ktor.jackson.*
 import io.ktor.features.*
 import io.ktor.client.*
@@ -45,6 +47,30 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
+
+        post("/companies/{company}/player") {
+
+            val companyName = call.parameters["company"]
+
+            if (companyName == null) {
+
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            val company = CompanyStore().companyWithName(companyName)
+
+            if (company == null) {
+                call.respond(HttpStatusCode.NotFound, mapOf("errorMessage" to "No such company"))
+                return@post
+            }
+
+            val player = call.receive<PlayerInfo>()
+            call.respond(company.addPlayer(player))
+        }
+
+
+
         get("/") {
             call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
         }

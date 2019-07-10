@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY kyp-0.0.1-all.jar /app
 
-EXPOSE 8080
 
 CMD ["java", "-jar", "kyp-0.0.1-all.jar"]
 
